@@ -1,0 +1,41 @@
+<% if flash[:error].present? %>
+  <div class="alert alert-danger">
+    <%= flash[:error] %>
+  </div>
+<% end %>
+
+
+<h1>Github Search</h1>
+
+<%= form_tag '/home', method: :get do %>
+  <label for="search_keyword">Search repository on Github:</label>
+  <%= text_field_tag 'search_keyword', '', required: true %>
+  <%= submit_tag 'Submit',class: "btn btn-primary" %>
+  <%= link_to 'Clear', home_index_path,class: "btn btn-danger" %>
+<% end %>
+
+<% if @results && @results[:repositories_result] %>
+  <h2>Total Results <%= @results [:result_count] %></h2>
+  <table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Url</th>
+        <th scope="col">Language</th>
+      </tr>
+    </thead>
+    <tbody> 
+      <% @results[:repositories_result].each do |res| %>
+        <tr>
+          <td scope="col"><%= res['hl_name'].html_safe %></td>
+          <td scope="col"><%= "https://github.com/#{res['hl_name']}".html_safe %></td>
+          <td scope="col"><%= res['language'].to_s.html_safe %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @page < @total_pages.to_i %>
+    <%= link_to 'Next', home_index_path(page: @page + 1,search_keyword: params[:search_keyword] ), class: "btn btn-primary btn-lg btn-block" %>
+  <% end %>
+<% end %>
+
